@@ -8,10 +8,10 @@ About magic number:
 https://en.wikipedia.org/wiki/File_format
 """
 filename = {
-    "train_image": "/content/drive/MyDrive/ML practice/data/train-images.idx3-ubyte",
-    "train_label": "/content/drive/MyDrive/ML practice/data/train-labels.idx1-ubyte",
-    "test_image": "/content/drive/MyDrive/ML practice/data/t10k-images.idx3-ubyte",
-    "test_label": "/content/drive/MyDrive/ML practice/data/t10k-labels.idx1-ubyte",
+    "train_image": "/content/drive/MyDrive/ai-practice/data/train-images.idx3-ubyte",
+    "train_label": "/content/drive/MyDrive/ai-practice/data/train-labels.idx1-ubyte",
+    "test_image": "/content/drive/MyDrive/ai-practice/data/t10k-images.idx3-ubyte",
+    "test_label": "/content/drive/MyDrive/ai-practice/data/t10k-labels.idx1-ubyte",
 }
 
 
