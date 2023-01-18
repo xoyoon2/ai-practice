@@ -57,11 +57,17 @@ class NeuralNetwork:
 
         return loss, grads
 
-    def train(self, X, y, learning_rate, epoch, batch_size=256, verbose=True):
-        num_train = X.shape[0]
+    def train(self, data, learning_rate, epoch, batch_size=256, verbose=True):
+        train_X, train_y, val_X, val_y = (
+            data["train_X"],
+            data["train_y"],
+            data["val_X"],
+            data["val_y"],
+        )
+        num_train = train_X.shape[0]
         for it in range(epoch):
             indices = np.random.choice(num_train, batch_size)
-            X_batch, y_batch = X[indices], y[indices]
+            X_batch, y_batch = train_X[indices], train_y[indices]
             loss, grads = self.loss(X_batch, y_batch)
 
             for param in grads:
@@ -71,8 +77,11 @@ class NeuralNetwork:
                 """Should be approximately (num_classes - 1)"""
                 print(f"Initial loss: {loss}")
             if verbose and it % 10 == 0:
-                print(f"Iteration: {it}, loss: {loss}")
-      
+                val_loss, _ = self.loss(val_X, val_y)
+                print(
+                    f"Iteration: {it}, train loss: {loss}, validation loss: {val_loss}"
+                )
+
     def predict(self, X):
         scores = self.loss(X)
         y = np.argmax(scores, axis=1)
