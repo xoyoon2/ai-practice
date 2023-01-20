@@ -17,6 +17,7 @@ class NeuralNetwork:
             )
             self.params[f"b{i+1}"] = initial_weight * np.random.randn(dims[i + 1])
         self.reg = reg
+        self.num_layers = len(hidden_dims) + 1
 
     def loss(self, X, y=None):
 
