@@ -18,42 +18,49 @@ class NeuralNetwork:
             self.params[f"b{i+1}"] = initial_weight * np.random.randn(dims[i + 1])
         self.reg = reg
 
-    def loss(self, X_batch, y_batch=None):
-        # print(self.params['W1'].shape, self.params['W2'].shape)
-        Hiddens = [X_batch]
+    def loss(self, X, y=None):
+
+        Hiddens = [X]
         caches = []
+
         """ Forward pass """
-        for i in range(len(self.params) // 2):
-            H, cache = affine_relu_forward(
-                Hiddens[i], self.params[f"W{i+1}"], self.params[f"b{i+1}"]
-            )
+        for i in range(1, self.num_layers + 1):
+            if i == self.num_layers:
+                H, cache = affine_forward(
+                    Hiddens[i - 1], self.params[f"W{i}"], self.params[f"b{i}"]
+                )
+            else:
+                H, cache = affine_relu_forward(
+                    Hiddens[i - 1], self.params[f"W{i}"], self.params[f"b{i}"]
+                )
             Hiddens.append(H)
             caches.append(cache)
 
-        """ if y is None, test mode: return scores """
         scores = Hiddens[-1]
-        if y_batch is None:
+
+        """ if y is None, test mode: return scores """
+        if y is None:
             return scores
 
         """ Backward pass """
 
-        grads = {}
-        loss, dscores = softmax_loss(scores, y_batch)
-        weight_norm = 0
-        for i in range(len(self.params) // 2):
-            weight_norm += np.sum(self.params[f"W{i+1}"] ** 2)
-        loss += 0.5 * self.reg * weight_norm
-        dHs = [dscores]
-        for i in range(len(self.params) // 2):
-            dH, dW, db = affine_relu_backward(
-                dHs[i], caches[len(self.params) // 2 - i - 1]
-            )
-            dW += self.reg * self.params[f"W{len(self.params) // 2 - i}"]
-            (
-                grads[f"W{len(self.params) // 2 - i}"],
-                grads[f"b{len(self.params) // 2 - i}"],
-            ) = (dW, db)
-            dHs.append(dH)
+        loss, grads = 0.0, {}
+
+        loss, dscores = softmax_loss(scores, y)
+
+        for i in range(1, self.num_layers + 1):
+            W = self.params[f"W{i}"]
+            loss += 0.5 * self.reg * np.sum(W * W)
+
+        for i in range(self.num_layers, 0, -1):
+            if i == self.num_layers:
+                dH, dW, db = affine_backward(dscores, caches[i - 1])
+            else:
+                dH, dW, db = affine_relu_backward(dout, caches[i - 1])
+            dW += self.reg * self.params[f"W{i}"]
+            grads[f"W{i}"] = dW
+            grads[f"b{i}"] = db
+            dout = dH
 
         return loss, grads
 
